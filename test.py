@@ -132,26 +132,26 @@ def get_dataframe():
         recommended_stocks = top_5_high_BPS.to_dict('records')
 
     code_id_mapper = dict()
-    code_id_mapper[['c', 'a', 'v', 'b']] = 1
-    code_id_mapper[['C', 'a', 'v', 'b']] = 2
-    code_id_mapper[['c', 'A', 'v', 'b']] = 3
-    code_id_mapper[['c', 'a', 'V', 'b']] = 4
-    code_id_mapper[['c', 'a', 'v', 'B']] = 5
-    code_id_mapper[['C', 'A', 'v', 'b']] = 6
-    code_id_mapper[['C', 'a', 'V', 'b']] = 7
-    code_id_mapper[['C', 'a', 'v', 'B']] = 8
-    code_id_mapper[['c', 'A', 'V', 'b']] = 9
-    code_id_mapper[['c', 'A', 'v', 'B']] = 10
-    code_id_mapper[['c', 'a', 'V', 'B']] = 11
-    code_id_mapper[['C', 'A', 'V', 'b']] = 12
-    code_id_mapper[['C', 'A', 'v', 'B']] = 13
-    code_id_mapper[['C', 'a', 'V', 'B']] = 14
-    code_id_mapper[['c', 'A', 'V', 'B']] = 15
-    code_id_mapper[['C', 'A', 'V', 'B']] = 16
+    code_id_mapper[('c', 'a', 'v', 'b')] = 1
+    code_id_mapper[('C', 'a', 'v', 'b')] = 2
+    code_id_mapper[('c', 'A', 'v', 'b')] = 3
+    code_id_mapper[('c', 'a', 'V', 'b')] = 4
+    code_id_mapper[('c', 'a', 'v', 'B')] = 5
+    code_id_mapper[('C', 'A', 'v', 'b')] = 6
+    code_id_mapper[('C', 'a', 'V', 'b')] = 7
+    code_id_mapper[('C', 'a', 'v', 'B')] = 8
+    code_id_mapper[('c', 'A', 'V', 'b')] = 9
+    code_id_mapper[('c', 'A', 'v', 'B')] = 10
+    code_id_mapper[('c', 'a', 'V', 'B')] = 11
+    code_id_mapper[('C', 'A', 'V', 'b')] = 12
+    code_id_mapper[('C', 'A', 'v', 'B')] = 13
+    code_id_mapper[('C', 'a', 'V', 'B')] = 14
+    code_id_mapper[('c', 'A', 'V', 'B')] = 15
+    code_id_mapper[('C', 'A', 'V', 'B')] = 16
 
     recommended_data = {
         "mbti": result2,
-        "Jbti": code_id_mapper[result1],
+        "jbti": code_id_mapper[tuple(result1)],
         "stocks": recommended_stocks
     }
 
