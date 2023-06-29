@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 import re
 import requests as rq
 import numpy as np
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+import logging
 
 app = Flask(__name__)
 
@@ -48,14 +49,17 @@ top_5_low_per = krx_ind.dropna(subset=['PER']).sort_values(by='PER').head(5)
 
 ######## 가치투자형을 위한 PER 상위 5개 종목 #########
 top_5_low_per = top_5_low_per[['종목코드', '종목명']].reset_index(drop=True)
+top_5_low_per.columns = ['stockCode', 'name']
 
 ######### 안전형을 위한 배당수익률 상위 5개 종목 ##########
 top_5_high_allocation = krx_ind.sort_values(by='배당수익률', ascending=False).head(5)
 top_5_high_allocation = top_5_high_allocation[['종목코드', '종목명']].reset_index(drop=True)
+top_5_high_allocation.columns = ['stockCode', 'name']
 
 ####### 수익형을 위한 BPS 상위 5개 종목 #########
 top_5_high_BPS = krx_ind.sort_values(by='BPS', ascending=False).head(5)
 top_5_high_BPS = top_5_high_BPS[['종목코드', '종목명']].reset_index(drop=True)
+top_5_high_BPS.columns = ['stockCode', 'name']
 
 from datetime import datetime, timedelta
 
@@ -102,25 +106,38 @@ krx_ind['PEG'] = peg.where(peg.notnull(), np.nan)
 ###### 공격형을 위한 PEG 상위종목 5개 #######
 top_5_low_peg = krx_ind.dropna(subset=['PEG']).sort_values(by='PEG').head(5)
 top_5_low_peg = top_5_low_peg[['종목코드', '종목명']].reset_index(drop=True)
+top_5_low_peg.columns = ['stockCode', 'name']
 
 
 @app.route('/api/dataframe', methods=['POST'])
-def get_dataframe(answers):
-    arr1 = [value for key, value in answers.items()]
+def get_dataframe():
+    logging.info('get_dataframe')
+    answers = request.get_json()
+    logging.info(answers)
+    arr1 = [1]*24
+
+    for QandA in answers:
+        logging.info(QandA)
+        #arr1.append(QandA['answer'])
+    #arr1 = [value for key, value in answers.items()]
 
     result1, result2 = CAVB(arr1)
     if result1[0] == 'C':
-        json_data = top_5_high_allocation.to_json(orient='records')
-        return jsonify(json_data)
+        recommended = top_5_high_allocation
+        
+        #return jsonify(json_data)
     if result1[1] == 'A':
-        json_data = top_5_low_peg.to_json(orient='records')
-        return jsonify(json_data)
+        recommended = top_5_low_peg
+        #return jsonify(json_data)
     if result1[2] == 'V':
-        json_data = top_5_low_per.to_json(orient='records')
-        return jsonify(json_data)
+        recommended = top_5_low_per
+        #return jsonify(json_data)
     if result1[3] == 'B':
-        json_data = top_5_high_BPS.to_json(orient='records')
-        return jsonify(json_data)
+        recommended = top_5_high_BPS
+        #return jsonify(json_data)
+    json_data = recommended
+    return jsonify(recommended.to_dict('records'))
+        
 
 
 
