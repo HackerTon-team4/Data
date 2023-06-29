@@ -1,5 +1,5 @@
-import requests # 보내고자 하는 ip로 전송하기 위해 라이브러리
-import json # python data 형식을 json 형식으로 변환하기 위한 라이브러리
+import requests  # 보내고자 하는 ip로 전송하기 위해 라이브러리
+import json  # python data 형식을 json 형식으로 변환하기 위한 라이브러리
 from bs4 import BeautifulSoup
 import re
 import requests as rq
@@ -10,7 +10,7 @@ import logging
 app = Flask(__name__)
 
 # URL(Public IP)
-url = "http://52.79.214.212:8080" # 해당 IP는 설명하기 위한 IP이지, 작성자가 사용하는 IP가 아님.
+url = "http://52.79.214.212:8080"  # 해당 IP는 설명하기 위한 IP이지, 작성자가 사용하는 IP가 아님.
 
 url = 'https://finance.naver.com/sise/sise_deposit.nhn'
 data = rq.get(url)
@@ -114,36 +114,33 @@ def get_dataframe():
     logging.info('get_dataframe')
     answers = request.get_json()
     logging.info(answers)
-    arr1 = [1]*24
+    arr1 = [k["answer"] for k in answers]
 
     for QandA in answers:
         logging.info(QandA)
-        #arr1.append(QandA['answer'])
-    #arr1 = [value for key, value in answers.items()]
 
     result1, result2 = CAVB(arr1)
+    recommended_stocks = []
+
     if result1[0] == 'C':
-        recommended = top_5_high_allocation
-        
-        #return jsonify(json_data)
-    if result1[1] == 'A':
-        recommended = top_5_low_peg
-        #return jsonify(json_data)
-    if result1[2] == 'V':
-        recommended = top_5_low_per
-        #return jsonify(json_data)
-    if result1[3] == 'B':
-        recommended = top_5_high_BPS
-        #return jsonify(json_data)
-    json_data = recommended
-    return jsonify(recommended.to_dict('records'))
-        
+        recommended_stocks = top_5_high_allocation.to_dict('records')
+    elif result1[1] == 'A':
+        recommended_stocks = top_5_low_peg.to_dict('records')
+    elif result1[2] == 'V':
+        recommended_stocks = top_5_low_per.to_dict('records')
+    elif result1[3] == 'B':
+        recommended_stocks = top_5_high_BPS.to_dict('records')
 
+    recommended_data = {
+        "mbti": result1,
+        "Jbti": result2,
+        "stocks": recommended_stocks
+    }
 
+    return jsonify(recommended_data)
 
 
 def CAVB(arr):
-
     c = 0  # 안전
     a = 0  # 공격
     v = 0  # 가치
