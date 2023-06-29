@@ -52,6 +52,10 @@ top_5_low_per = top_5_low_per[['종목코드', '종목명']].reset_index(drop=Tr
 top_5_high_allocation = krx_ind.sort_values(by='배당수익률', ascending=False).head(5)
 top_5_high_allocation = top_5_high_allocation[['종목코드', '종목명']].reset_index(drop=True)
 
+# 수익형을 위한 BPS 상위 5개 종목
+top_5_high_BPS = krx_ind.sort_values(by='BPS', ascending=False).head(5)
+top_5_high_BPS = top_5_high_BPS[['종목코드', '종목명']].reset_index(drop=True)
+
 from datetime import datetime, timedelta
 
 current_date = datetime.now().date()
@@ -106,9 +110,10 @@ def index():
     table1 = top_5_low_per.to_html(index=False)
     table2 = top_5_high_allocation.to_html(index=False)
     table3 = top_5_low_peg.to_html(index=False)
+    table4 = top_5_high_BPS.to_html(index=False)
 
     # 템플릿 파일에 데이터 전달하여 렌더링
-    return render_template('index.html', table1=table1, table2=table2, table3=table3)
+    return render_template('index.html', table1=table1, table2=table2, table3=table3, table4=table4)
 
 
 if __name__ == '__main__':
